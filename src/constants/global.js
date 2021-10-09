@@ -1,3 +1,4 @@
-const ENDPOINT = "http://192.168.51.87:5002";
+const ENDPOINT = "http://192.168.196.87:5002";
+const SOKETENDPOINT = "ws://192.168.196.87:5001";
 
-export { ENDPOINT };
+export { ENDPOINT, SOKETENDPOINT };

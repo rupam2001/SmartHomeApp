@@ -1,26 +1,45 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import ToggleSwitch from "toggle-switch-react-native";
 import { commandOnOffApiCallAsync } from "../../api/components.api";
+import Slider from "../../components/Slider";
 import { Theme } from "../../constants/theme";
+import { AuthContext } from "../../context/auth.context";
+import { DataContext } from "../../context/data.context";
+import { getDeviceIdAsync, getWsTokenAsync } from "../../storage/authdata";
 import { switchType } from "../../types/types";
 
 export default function Controls(): JSX.Element {
   const [switches, setSwitches] = useState<Array<switchType>>([...s]);
+  const datacontext = useContext(DataContext);
+  const authcontext = useContext(AuthContext);
+  const [currentSliderValue, setCurrentSliderValue] = useState("0");
+
+  const [states, setStates] = useState(null);
 
   const handleOnToggleLight = async (s: switchType) => {
-    //api call here
-    const res = await commandOnOffApiCallAsync(s);
-    if (!res) {
-      alert("Something went wrong");
-      return;
-    }
-    if (!res.success) {
-      alert(res.msg);
-      return;
-    }
+    // //api call here
+    // const res = await commandOnOffApiCallAsync(s);
+    // if (!res) {
+    //   alert("Something went wrong");
+    //   return;
+    // }
+    // if (!res.success) {
+    //   alert(res.msg);
+    //   return;
+    // }
 
+    // toggleLight(s._id);
+
+    const msg = {
+      ...s,
+      send_to_device: true,
+      device_id: await getDeviceIdAsync(),
+      ws_token: await getWsTokenAsync(),
+      command: s._id,
+    };
     toggleLight(s._id);
+    datacontext.sendMessage(JSON.stringify(msg));
   };
   const toggleLight = (_id: String) => {
     let temp = [...switches];
@@ -33,10 +52,102 @@ export default function Controls(): JSX.Element {
     }
   };
 
+  useEffect(() => {
+    const { messageQueue } = datacontext;
+    if (messageQueue.length == 0) return;
+    const msg = messageQueue[0];
+    if (msg.type == "state_info") {
+      //handle the new states
+      setStates(msg.states);
+    }
+
+    let temp = [...messageQueue];
+    temp.shift(); // removing the first element
+    datacontext.setMessageQueue(temp);
+  }, [datacontext.messageQueue]);
+
+  useEffect(() => {
+    if (!states) return;
+    let temp = [...switches];
+    for (const key in states) {
+      if (key == "dimmer") {
+        setCurrentSliderValue(states[key]);
+        continue;
+      }
+      for (let i = 0; i < switches.length; i++) {
+        if (temp[i]._id == key) {
+          temp[i].isOn = !states[key];
+        }
+      }
+    }
+    setSwitches(temp);
+    setStates(null);
+  }, [states]);
+
+  useEffect(() => {
+    //request for initial states
+    getStates();
+  }, []);
+  const getStates = async () => {
+    datacontext.sendMessage(
+      JSON.stringify({
+        getStates: true,
+        device_id: await getDeviceIdAsync(),
+        ws_token: await getWsTokenAsync(),
+      })
+    );
+  };
+
+  const handleDimmerSpeedChange = async (newSpeed: string) => {
+    datacontext.sendMessage(
+      JSON.stringify({
+        send_to_device: true,
+        device_id: await getDeviceIdAsync(),
+        ws_token: await getWsTokenAsync(),
+        command: "dimmer",
+        value: newSpeed,
+      })
+    );
+    setCurrentSliderValue(newSpeed);
+  };
+
   return (
-    <View style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <View style={{ flex: 1 }}>
-        <Text>Slider</Text>
+    <View
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        justifyContent: "center",
+        backgroundColor: Theme.color.white,
+      }}
+    >
+      <View style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+        <View
+          style={{
+            backgroundColor: Theme.color.blue,
+            paddingVertical: 20,
+            marginHorizontal: 8,
+            borderRadius: 10,
+          }}
+        >
+          <Slider
+            values={["0", "1", "2", "3"]}
+            onChange={(val) => {
+              handleDimmerSpeedChange(val);
+            }}
+            currentValue={currentSliderValue}
+          />
+          <Text
+            style={{
+              textAlign: "center",
+              marginTop: 10,
+              fontSize: 20,
+              color: Theme.color.whitesmoke,
+            }}
+          >
+            FAN SPEED
+          </Text>
+        </View>
       </View>
       <View
         style={[
@@ -57,21 +168,28 @@ export default function Controls(): JSX.Element {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                transform: [{ scale: 1.5 }],
               },
             ]}
           >
-            <ToggleSwitch
-              isOn={s.isOn}
-              onColor={Theme.color.blue}
-              offColor="gray"
-              label=""
-              labelStyle={{ color: "black", fontWeight: "bold" }}
-              size="large"
-              onToggle={(isOn: Boolean) => {
-                handleOnToggleLight(s);
-              }}
-            />
-            <Text style={{ fontWeight: "bold" }}>{s.title}</Text>
+            <View
+              style={{ transform: [{ rotate: "90deg" }], marginBottom: 20 }}
+            >
+              <ToggleSwitch
+                isOn={s.isOn}
+                onColor={Theme.color.green}
+                offColor="gray"
+                label=""
+                labelStyle={{ color: "black", fontWeight: "bold" }}
+                size="large"
+                onToggle={(isOn: Boolean) => {
+                  handleOnToggleLight(s);
+                }}
+              />
+            </View>
+            <Text style={{ fontWeight: "bold", color: Theme.color.blue }}>
+              {s.title}
+            </Text>
           </View>
         ))}
       </View>
@@ -99,17 +217,17 @@ const style = StyleSheet.create({
 const s = [
   {
     title: "Light 1",
-    _id: "123",
+    _id: "l1",
     isOn: false,
   },
   {
     title: "Light 2",
-    _id: "124",
+    _id: "l2",
     isOn: false,
   },
   {
     title: "Light 3",
-    _id: "125",
+    _id: "l3",
     isOn: false,
   },
 ];
