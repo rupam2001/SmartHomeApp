@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import ToggleSwitch from "toggle-switch-react-native";
 import { commandOnOffApiCallAsync } from "../../api/components.api";
 import Slider from "../../components/Slider";
@@ -38,7 +44,7 @@ export default function Controls(): JSX.Element {
       ws_token: await getWsTokenAsync(),
       command: s._id,
     };
-    toggleLight(s._id);
+    // toggleLight(s._id);
     datacontext.sendMessage(JSON.stringify(msg));
   };
   const toggleLight = (_id: String) => {
@@ -112,13 +118,14 @@ export default function Controls(): JSX.Element {
   };
 
   return (
-    <View
+    <ImageBackground
+      source={Theme.bg.controls}
       style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
         justifyContent: "center",
-        backgroundColor: Theme.color.white,
+        backgroundColor: Theme.color.black,
       }}
     >
       <View style={{ flex: 1, display: "flex", justifyContent: "center" }}>
@@ -187,13 +194,13 @@ export default function Controls(): JSX.Element {
                 }}
               />
             </View>
-            <Text style={{ fontWeight: "bold", color: Theme.color.blue }}>
+            <Text style={{ fontWeight: "bold", color: Theme.color.white }}>
               {s.title}
             </Text>
           </View>
         ))}
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
