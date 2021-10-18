@@ -1,9 +1,9 @@
 import * as SecureStore from "expo-secure-store";
 
-const ACCESS_TOKEN_KEY = "access_token_2";
-const REFRESH_TOKEN_KEY = "refresh_token_2";
-const DEVICE_ID_KEY = "device_id_2";
-const WS_TOKEN = "ws_token_2";
+const ACCESS_TOKEN_KEY = "access_token_3";
+const REFRESH_TOKEN_KEY = "refresh_token_3";
+const DEVICE_ID_KEY = "device_id_3";
+const WS_TOKEN = "ws_token_3";
 
 export const saveAccessTokenAsync = async (token: string | undefined) => {
   if (!token) return;

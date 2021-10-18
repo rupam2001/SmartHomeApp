@@ -6,6 +6,7 @@ export const Theme = {
     whitesmoke: "#F5F5F5",
     white: "#FFFFFF",
     black: "black",
+    diggerblue: "#005A9C",
   },
   bg: {
     controls: {

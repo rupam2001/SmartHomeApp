@@ -14,12 +14,14 @@ import { AuthContext } from "../../context/auth.context";
 import { DataContext } from "../../context/data.context";
 import { getDeviceIdAsync, getWsTokenAsync } from "../../storage/authdata";
 import { switchType } from "../../types/types";
+import { Switch } from "react-native-paper";
 
-export default function Controls(): JSX.Element {
+export default function Controls({ navigation }): JSX.Element {
   const [switches, setSwitches] = useState<Array<switchType>>([...s]);
   const datacontext = useContext(DataContext);
   const authcontext = useContext(AuthContext);
   const [currentSliderValue, setCurrentSliderValue] = useState("0");
+  const [isSmartTempOn, setIsSmartTempOn] = useState(false);
 
   const [states, setStates] = useState(null);
 
@@ -76,9 +78,13 @@ export default function Controls(): JSX.Element {
     if (!states) return;
     let temp = [...switches];
     for (const key in states) {
-      if (key == "dimmer") {
+      if (key == "slider_value") {
         setCurrentSliderValue(states[key]);
         continue;
+      }
+      if (key == "smart_temp") {
+        console.log(states[key]);
+        setIsSmartTempOn(states[key]);
       }
       for (let i = 0; i < switches.length; i++) {
         if (temp[i]._id == key) {
@@ -92,8 +98,9 @@ export default function Controls(): JSX.Element {
 
   useEffect(() => {
     //request for initial states
-    getStates();
+    // getStates();
   }, []);
+
   const getStates = async () => {
     datacontext.sendMessage(
       JSON.stringify({
@@ -114,7 +121,21 @@ export default function Controls(): JSX.Element {
         value: newSpeed,
       })
     );
-    setCurrentSliderValue(newSpeed);
+    // setCurrentSliderValue(newSpeed);
+  };
+
+  const handleSmartTempClick = async () => {
+    datacontext.sendMessage(
+      JSON.stringify({
+        send_to_device: true,
+        device_id: await getDeviceIdAsync(),
+        ws_token: await getWsTokenAsync(),
+        command: "smart_temp",
+        // value: newSpeed,
+        value: "",
+      })
+    );
+    setIsSmartTempOn(!isSmartTempOn);
   };
 
   return (
@@ -128,6 +149,29 @@ export default function Controls(): JSX.Element {
         backgroundColor: Theme.color.black,
       }}
     >
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          flexDirection: "row",
+        }}
+      >
+        <Text
+          style={{
+            color: Theme.color.black,
+            margin: 10,
+            backgroundColor: Theme.color.whitesmoke,
+            padding: 5,
+            fontWeight: "bold",
+            borderRadius: 10,
+          }}
+          onPress={() => {
+            navigation.navigate("Wifi");
+          }}
+        >
+          Wifi
+        </Text>
+      </View>
       <View style={{ flex: 1, display: "flex", justifyContent: "center" }}>
         <View
           style={{
@@ -154,6 +198,23 @@ export default function Controls(): JSX.Element {
           >
             FAN SPEED
           </Text>
+          <View style={{ padding: 10 }}>
+            <Switch
+              value={isSmartTempOn}
+              style={{}}
+              color={Theme.color.diggerblue}
+              onValueChange={handleSmartTempClick}
+            />
+            <Text
+              style={{
+                color: Theme.color.white,
+                textAlign: "right",
+                fontStyle: "italic",
+              }}
+            >
+              Smart Speed
+            </Text>
+          </View>
         </View>
       </View>
       <View

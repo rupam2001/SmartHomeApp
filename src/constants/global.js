@@ -1,4 +1,7 @@
-const ENDPOINT = "http://192.168.196.87:5002";
-const SOKETENDPOINT = "ws://192.168.196.87:5001";
+const ENDPOINT = "http://192.168.54.87:5002";
+// const SOKETENDPOINT = "ws://192.168.54.87:5001";
+const SOKETENDPOINT = "wss://smarthomeiotsocket.herokuapp.com";
 
-export { ENDPOINT, SOKETENDPOINT };
+const ESPENDPOINT = "http://192.168.4.1:80/";
+
+export { ENDPOINT, SOKETENDPOINT, ESPENDPOINT };

@@ -8,6 +8,7 @@ import Controls from "./src/screens/Controls";
 import Login from "./src/screens/Login";
 import AuthContextProvider, { AuthContext } from "./src/context/auth.context";
 import DataContextProvider from "./src/context/data.context";
+import Wifi from "./src/screens/Wifi";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ const Main = () => {
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
               <Stack.Screen name="Controls" component={Controls} />
+              <Stack.Screen name="Wifi" component={Wifi} />
             </Stack.Navigator>
           </NavigationContainer>
         </DataContextProvider>
