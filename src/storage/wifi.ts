@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-const WIFI_INFO_KEY = "wifi_info";
+const WIFI_INFO_KEY = "wifi_info_1";
 
 export async function saveWifiInfoAsync(ssid: string, password: string) {
   let previousData = await SecureStore.getItemAsync(WIFI_INFO_KEY);

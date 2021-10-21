@@ -3,15 +3,15 @@ import { ImageBackground, Text, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { SetWifiAsync } from "../../api/wifi";
 import { Theme } from "../../constants/theme";
-import { getWifiInfoAsync } from "../../storage/wifi";
+import { getWifiInfoAsync, saveWifiInfoAsync } from "../../storage/wifi";
 
+type wifiListType = {
+  ssid: string;
+  password: string;
+};
 export default function Wifi() {
-  const [wifiList, setWifiList] = React.useState([
-    "network1",
-    "network2",
-    "network3",
-  ]);
-  const [currentWifi, setCurrentWifi] = React.useState(null);
+  const [wifiList, setWifiList] = React.useState<Array<wifiListType>>([]);
+  const [currentWifi, setCurrentWifi] = React.useState("");
   const [showAddForm, setShowAddForm] = React.useState(false);
   const [ssid, setSsid] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -25,10 +25,18 @@ export default function Wifi() {
       setWifiList(list);
     }
   };
-  const handleWifiConnectAsync = async () => {
-    if (ssid.length == 0 || password.length < 8) return;
-    const res = await SetWifiAsync(ssid, password);
-    console.log(res);
+  const handleWifiConnectAsync = async (_ssid: string, _password: string) => {
+    if (_ssid.length == 0 || _password.length < 6) return;
+    const res = await SetWifiAsync(_ssid, _password);
+    if (res.success) {
+      setCurrentWifi(_ssid);
+      setWifiList([{ ssid: _ssid, password: _password }, ...wifiList]);
+      saveWifiInfoAsync(_ssid, _password);
+      alert(JSON.stringify(res));
+      return;
+    }
+    alert("Cannot connect");
+    console.log("cannot connect");
   };
   return (
     <ImageBackground
@@ -83,15 +91,17 @@ export default function Wifi() {
                 placeholder="ssid"
                 style={{ margin: 10, backgroundColor: Theme.color.bluesmoke }}
                 onChangeText={(text) => setSsid(text)}
+                autoCapitalize={"none"}
               />
               <TextInput
                 placeholder="password"
                 style={{ margin: 10, backgroundColor: Theme.color.bluesmoke }}
                 onChangeText={(text) => setPassword(text)}
+                autoCapitalize={"none"}
               />
               <Button
                 onPress={() => {
-                  handleWifiConnectAsync();
+                  handleWifiConnectAsync(ssid, password);
                 }}
                 style={{ margin: 10 }}
                 color={Theme.color.green}
@@ -102,12 +112,12 @@ export default function Wifi() {
             </View>
           )}
 
-          <Text style={{ color: Theme.color.white, margin: 5 }}>
+          {/* <Text style={{ color: Theme.color.white, margin: 5 }}>
             Wifi history:{" "}
           </Text>
           {wifiList.map((w) => (
             <View
-              key={w}
+              key={w.ssid}
               style={{
                 padding: 10,
                 backgroundColor: Theme.color.diggerblue,
@@ -116,7 +126,7 @@ export default function Wifi() {
               }}
             >
               <Text style={{ fontSize: 20, color: Theme.color.white }}>
-                {w}
+                {w.ssid}
               </Text>
               <View
                 style={{
@@ -125,18 +135,22 @@ export default function Wifi() {
                   justifyContent: "flex-end",
                 }}
               >
-                <Text
-                  style={{
-                    padding: 5,
-                    backgroundColor: Theme.color.green,
-                    borderRadius: 10,
-                  }}
-                >
-                  Connect
-                </Text>
+                {currentWifi != w.ssid ? (
+                  <Text
+                    style={{
+                      padding: 5,
+                      backgroundColor: Theme.color.green,
+                      borderRadius: 10,
+                    }}
+                  >
+                    Connect
+                  </Text>
+                ) : (
+                  "Connected"
+                )}
               </View>
             </View>
-          ))}
+          ))} */}
         </View>
       </View>
     </ImageBackground>
