@@ -7,6 +7,7 @@ export default function AuthContextProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [access_token, setAccess_token] = useState(null);
   const [device_id, setDevice_id] = useState(null);
+  const [curr_wifi_ssid, setCurr_wifi_ssid] = useState("");
   useEffect(() => {
     autoAuthAsync();
   }, []);
@@ -27,6 +28,8 @@ export default function AuthContextProvider({ children }) {
       value={{
         isLoggedIn,
         setIsLoggedIn,
+        curr_wifi_ssid,
+        setCurr_wifi_ssid,
       }}
     >
       {children}

@@ -68,6 +68,9 @@ export default function Controls({ navigation }): JSX.Element {
       //handle the new states
       setStates(msg.states);
     }
+    if (msg["wifi_ssid"]) {
+      authcontext.setCurr_wifi_ssid(msg["wifi_ssid"]);
+    }
 
     let temp = [...messageQueue];
     temp.shift(); // removing the first element
@@ -244,7 +247,7 @@ export default function Controls({ navigation }): JSX.Element {
               style={{ transform: [{ rotate: "90deg" }], marginBottom: 20 }}
             >
               <ToggleSwitch
-                isOn={s.isOn}
+                isOn={!s.isOn}
                 onColor={Theme.color.green}
                 offColor="gray"
                 label=""
@@ -284,18 +287,18 @@ const style = StyleSheet.create({
 
 const s = [
   {
-    title: "Light 1",
+    title: "",
     _id: "l1",
-    isOn: false,
+    isOn: !false,
   },
   {
-    title: "Light 2",
+    title: "",
     _id: "l2",
-    isOn: false,
+    isOn: !false,
   },
   {
-    title: "Light 3",
+    title: "",
     _id: "l3",
-    isOn: false,
+    isOn: !false,
   },
 ];

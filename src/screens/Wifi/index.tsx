@@ -1,8 +1,9 @@
 import * as React from "react";
 import { ImageBackground, Text, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
-import { SetWifiAsync } from "../../api/wifi";
+import { getCurrentWifiInfoAsync, SetWifiAsync } from "../../api/wifi";
 import { Theme } from "../../constants/theme";
+import { AuthContext } from "../../context/auth.context";
 import { getWifiInfoAsync, saveWifiInfoAsync } from "../../storage/wifi";
 
 type wifiListType = {
@@ -15,6 +16,7 @@ export default function Wifi() {
   const [showAddForm, setShowAddForm] = React.useState(false);
   const [ssid, setSsid] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const authcontext = React.useContext(AuthContext);
   React.useEffect(() => {
     //get all the wifi lists
     loadWifiListAsync();
@@ -32,12 +34,22 @@ export default function Wifi() {
       setCurrentWifi(_ssid);
       setWifiList([{ ssid: _ssid, password: _password }, ...wifiList]);
       saveWifiInfoAsync(_ssid, _password);
-      alert(JSON.stringify(res));
+      alert("Connected");
+      alert("Cannot connect");
+      setTimeout(() => {
+        getWifiNameAsync();
+      }, 3000);
+      setShowAddForm(false);
       return;
     }
-    alert("Cannot connect");
-    console.log("cannot connect");
   };
+  const getWifiNameAsync = async () => {
+    const res = await getCurrentWifiInfoAsync();
+    setCurrentWifi(res.res);
+  };
+  React.useEffect(() => {
+    setCurrentWifi(authcontext.curr_wifi_ssid);
+  }, [authcontext.curr_wifi_ssid]);
   return (
     <ImageBackground
       source={Theme.bg.controls}
@@ -111,6 +123,25 @@ export default function Wifi() {
               </Button>
             </View>
           )}
+
+          {currentWifi != "" && (
+            <Text
+              style={{ color: Theme.color.white, margin: 10, fontSize: 18 }}
+            >
+              Connected to: {currentWifi}
+            </Text>
+          )}
+
+          <Text
+            style={{
+              color: Theme.color.green,
+              fontSize: 20,
+              textAlign: "center",
+              margin: 10,
+            }}
+          >
+            Please Make Sure you are connected to your device's hotspot
+          </Text>
 
           {/* <Text style={{ color: Theme.color.white, margin: 5 }}>
             Wifi history:{" "}
