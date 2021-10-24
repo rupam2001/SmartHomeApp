@@ -69,6 +69,7 @@ export default function Controls({ navigation }): JSX.Element {
       setStates(msg.states);
     }
     if (msg["wifi_ssid"]) {
+      console.log(msg["wifi_ssid"]);
       authcontext.setCurr_wifi_ssid(msg["wifi_ssid"]);
     }
 

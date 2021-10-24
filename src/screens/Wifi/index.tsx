@@ -20,6 +20,7 @@ export default function Wifi() {
   React.useEffect(() => {
     //get all the wifi lists
     loadWifiListAsync();
+    setCurrentWifi(authcontext.curr_wifi_ssid);
   }, []);
   const loadWifiListAsync = async () => {
     const list = await getWifiInfoAsync();
@@ -49,7 +50,7 @@ export default function Wifi() {
   };
   React.useEffect(() => {
     setCurrentWifi(authcontext.curr_wifi_ssid);
-  }, [authcontext.curr_wifi_ssid]);
+  }, [authcontext, authcontext.curr_wifi_ssid]);
   return (
     <ImageBackground
       source={Theme.bg.controls}

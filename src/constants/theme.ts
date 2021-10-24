@@ -10,7 +10,7 @@ export const Theme = {
   },
   bg: {
     controls: {
-      uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSxzNpSTRsxWTadsCiNaCyZBh4Yo0XsSpzL6z-JJbX3QMp1G3U-PFskmTzfm73tWObJTE&usqp=CAU",
+      uri: "https://wallpaperaccess.com/full/126353.jpg",
     },
   },
   icons: {},

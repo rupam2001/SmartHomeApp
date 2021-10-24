@@ -60,6 +60,9 @@ export default function DataContextProvider({ children, isLoggedIn }) {
 
   const sendMessage = (msg) => {
     // console.log(ws);
+    if (!ws) {
+      reconnect();
+    }
     try {
       ws.send(msg);
     } catch (error) {
@@ -75,6 +78,8 @@ export default function DataContextProvider({ children, isLoggedIn }) {
         sendMessage,
         setOnMessage,
         ws,
+        reconnect,
+        init,
       }}
     >
       {children}
