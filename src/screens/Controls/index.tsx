@@ -38,7 +38,7 @@ export default function Controls({ navigation }): JSX.Element {
     // }
 
     // toggleLight(s._id);
-
+    // toggleLight(s._id); /////////>video purpose
     const msg = {
       ...s,
       send_to_device: true,
@@ -116,6 +116,7 @@ export default function Controls({ navigation }): JSX.Element {
   };
 
   const handleDimmerSpeedChange = async (newSpeed: string) => {
+    // setCurrentSliderValue(newSpeed);
     datacontext.sendMessage(
       JSON.stringify({
         send_to_device: true,
